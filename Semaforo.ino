@@ -1,4 +1,4 @@
-
+#include <Arduino.h>
 unsigned long lastSampleTime = 0;
 const unsigned long SAMPLING_INTERVAL = 125; 
 const int rosso =20000, verde=20000, giallo=3000;
@@ -10,9 +10,19 @@ const int rosso =20000, verde=20000, giallo=3000;
 #define PIN_VERDE_V 6
 #define PIN_GIALLO_V 7
 #define PIN_ROSSO_V 8
-int attesa (int);
+int attesa ( unsigned int);
 bool Controllo_seriale(char);
 void Emergenza();
+void Semaforo_Rosso_O();
+void Semaforo_Giallo_O();
+void Semaforo_Verde_O();
+void Semaforo_Rosso_V();
+void Semaforo_Giallo_V();
+void Semaforo_Verde_V();
+void Semaforo_Giallo_G();
+void Semaforo_Rosso_G(); 
+void Semaforo_Giallo_L();
+
 
 void setup() {
 
@@ -30,21 +40,15 @@ void loop() {
   
  if (micros() - lastSampleTime >= SAMPLING_INTERVAL) {
     lastSampleTime = micros();
-    
-    // Legge il valore (0-1023)
     int rawVal = analogRead(PIN_MIC);
-    
-    // Converte da 10-bit a 8-bit (0-255) spostando i bit di 2 posizioni a destra
     byte binSample = (byte)(rawVal >> 2);
-    
-    // Invia il singolo byte grezzo sulla seriale
     Serial.write(binSample);
  }
       char Terminale = Serial.read();
       int caso=0;
       if (Terminale == ('I')){
  while(Terminale != ('N')) {
-      Semaforo_Rosso_O();
+      Semaforo_Rosso_O;
       caso=attesa(rosso);
       if(caso == 1){
       Emergenza();
@@ -52,7 +56,7 @@ void loop() {
       else if (caso == 3){
         break;
       }
-      Semaforo_Giallo_V();
+      Semaforo_Giallo_V;
       caso=attesa(giallo);
       if(caso == 1){
       Emergenza();
@@ -60,7 +64,7 @@ void loop() {
       else if (caso == 3){
         break;
       }
-      Semaforo_Verde_O();
+      Semaforo_Verde_O;
       caso=attesa(verde);
       if(caso == 1){
       Emergenza();
@@ -68,7 +72,7 @@ void loop() {
       else if (caso == 3){
         break;
       }
-      Semaforo_Giallo_O();
+      Semaforo_Giallo_O;
       caso=attesa(giallo);
       if(caso == 1){
       Emergenza();
@@ -78,8 +82,10 @@ void loop() {
       }
     
  }
-   Serial.write("Semaforo spento");
-   return 0;
+   while (true){
+    Semaforo_Giallo_L;
+   }
+   
       }
       
      
@@ -147,6 +153,21 @@ void loop() {
     digitalWrite(PIN_GIALLO_V,LOW);
     digitalWrite(PIN_ROSSO_V,HIGH);
   }
+  void Semaforo_Giallo_L() //lampeggiante
+  {
+    digitalWrite(PIN_VERDE_O,LOW);
+    digitalWrite(PIN_GIALLO_O,HIGH);
+    digitalWrite(PIN_ROSSO_O,LOW);
+    // verticale acceso
+    digitalWrite(PIN_VERDE_V,LOW);
+    digitalWrite(PIN_GIALLO_V,HIGH);
+    digitalWrite(PIN_ROSSO_V,LOW);
+    delay(500);
+    //orizzontale spento
+    digitalWrite(PIN_GIALLO_O,LOW);
+    // verticale spento
+    digitalWrite(PIN_GIALLO_V,LOW);
+  }
 int attesa(int delay){
   unsigned long int Tempo_inizio=millis();
   while(millis()-Tempo_inizio<delay){
@@ -168,12 +189,14 @@ int attesa(int delay){
     }
 }
   }
+  return 4;
 }
 
-int attesa_emergenza(int delay){
+int attesa_emergenza(unsigned int delay){
   unsigned long int Tempo_inizio=millis();
   while(millis()-Tempo_inizio<delay){
      if (micros() - lastSampleTime >= SAMPLING_INTERVAL) {
+      //invio campioni a python
     lastSampleTime = micros();
     int rawVal = analogRead(PIN_MIC);
     byte binSample = (byte)(rawVal >> 2);
@@ -190,16 +213,13 @@ int attesa_emergenza(int delay){
   }
   return 3;
 }
-void Emergenza(){
-      Serial.print("EMergenza");
-      Semaforo_Giallo_G();
+void Emergenza(){;
+      Semaforo_Giallo_G;
       delay(3000);
-      Semaforo_Rosso_G(); 
+      Semaforo_Rosso_G; 
       int caso=attesa_emergenza(10000);
       while(caso == 3){
-        Serial.write("L'emergenza continua");
-        Semaforo_Rosso_G();
+        Semaforo_Rosso_G;
         caso=attesa_emergenza(3000);
       }
-      Serial.write("L'emergenza finita");
 }
