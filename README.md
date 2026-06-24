@@ -5,13 +5,13 @@
 [![PlatformIO](https://img.shields.io/badge/PlatformIO-IDE-orange.svg)](https://platformio.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A real-time system that detects approaching ambulance sirens and automatically gives priority to emergency vehicles by turning traffic lights green.
+A real-time system that detects approaching ambulance sirens and automatically gives priority to emergency vehicles by turning all traffic lights red.
 
 ---
 
 ## 📖 Overview
 
-This project implements an **intelligent traffic light control system** that listens to environmental sounds, detects ambulance sirens using machine learning, and commands the traffic light to switch to an emergency mode (yellow → red for cross traffic → green for the ambulance route).
+This project implements an **intelligent traffic light control system** that listens to environmental sounds, detects ambulance sirens using machine learning, and commands the traffic light to switch to an emergency mode (yellow → red for all traffic ).
 
 The system is designed to be:
 - **Real-time** – processes audio in 2-second windows
@@ -77,7 +77,7 @@ text
 │ └── Semaforo.ino # Controls the Microphone and tells the Traffic light module what to do
 ├── python/
 │ ├── train.py # SVM training script
-│ ├── siren_model.pkl
+│ ├── siren_model.pkl #
 │ ├── scaler.pkl
 │ └── label_encoder.pkl
 ├── data/
@@ -85,8 +85,6 @@ text
 │ └── non_siren/ # .wav files of noise (training)
 ├── platformio.ini # PlatformIO configuration
 └── README.md # This file
-
-text
 
 ---
 
@@ -133,7 +131,6 @@ python python/train.py
 This will generate siren_model.pkl, scaler.pkl, and label_encoder.pkl.
 
 🚀 Usage
-Option A: Real-time detection with Arduino
 bash
 python python/detect_arduino.py
 Connects to Arduino on COM4 (change in script)
@@ -141,20 +138,6 @@ Connects to Arduino on COM4 (change in script)
 Listens to audio stream from Arduino
 
 Prints predictions and activates traffic light on siren detection
-
-Option B: PC microphone (no Arduino required)
-bash
-python python/detect.py
-Uses your PC's built‑in microphone
-
-Great for testing the classifier without hardware
-
-Option C: Record WAV from Arduino (debug)
-bash
-python python/record_arduino.py
-Saves 5 seconds of audio as registrazione.wav
-
-Use to verify microphone quality and sample rate
 
 📊 Training your own model
 To improve accuracy for your local sirens:
@@ -181,13 +164,6 @@ Detection window	2 seconds
 Arduino sample rate	8 kHz (adjustable)
 Serial baud rate	115200
 False positive rate	< 5% (with proper training)
-🧩 Troubleshooting
-Issue	Solution
-Serial module not found	python -m pip install pyserial
-Arduino not sending data	Check baud rate (115200) and wiring
-Low detection accuracy	Add more training samples; use MAX9814 microphone
-Audio sounds slow/fast	Adjust SR_ARDUINO in Python to match Arduino's real sample rate
-Port already in use	Close Serial Monitor or other applications
 🧠 Future Improvements
 Implement Doppler shift analysis to estimate distance and direction
 
@@ -197,21 +173,11 @@ Deploy model on Raspberry Pi for standalone operation
 
 Real‑time visualization of audio spectrum and detection confidence
 
-Support for multiple emergency vehicles (fire trucks, police)
+Support for multiple emergency vehicles  (fire trucks, police) and in different countries with different sirens
 
-🤝 Contributing
-Contributions are welcome! Please:
-
-Fork the repository
-
-Create a feature branch
-
-Commit your changes
-
-Open a Pull Request
 
 📄 License
-This project is licensed under the MIT License – see the LICENSE file for details.
+This project is licensed under the MIT License 
 
 🙏 Acknowledgements
 UrbanSound8K for non-siren audio samples
@@ -222,9 +188,5 @@ scikit-learn for SVM implementation
 
 PlatformIO and Arduino communities for hardware support
 
-📬 Contact
-For questions or suggestions, open an issue or reach out to Your Name at your.email@example.com.
+Few-Shot Emergency Siren Detection by Michela Cantarini, Leonardo Gabrielli and Stefano Squartini for the idea
 
-Made with ❤️ for safer roads.
-
-text
