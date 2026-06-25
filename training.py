@@ -55,7 +55,7 @@ def main():
     print(f"Totale campioni: {len(X)}")
     le = LabelEncoder()
     y_enc = le.fit_transform(y)  
-    X_train, X_test, y_train, y_test = train_test_split(X, y_enc, test_size=0.2, random_state=42, stratify=y_enc)ù
+    X_train, X_test, y_train, y_test = train_test_split(X, y_enc, test_size=0.2, random_state=42, stratify=y_enc)
     #deviazione standard dei dati
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
