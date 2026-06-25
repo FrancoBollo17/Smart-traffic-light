@@ -18,24 +18,26 @@ def extract_features(file_path, duration=DURATA_SEGMENTO, sr=SR):
     """Estrae MFCC medi da un file audio, tagliando/riempiendo a durata fissa."""
     try:
         audio, _ = librosa.load(file_path, sr=sr, duration=duration, res_type='kaiser_fast')
+        #ricampiona i dati a 16000hz
         if len(audio) < sr * duration:
             audio = np.pad(audio, (0, int(sr * duration) - len(audio)))
         mfcc = librosa.feature.mfcc(y=audio, sr=sr, n_mfcc=N_MFCC)
+        #fa l'MFCC
         return np.mean(mfcc.T, axis=0)
     except Exception as e:
         print(f"Errore su {file_path}: {e}")
         return None
 
 def load_data():
-    features = []
-    labels = []
+    features = [] #contiene gli MFCC
+    labels = [] #contiene le etichette
     for label_name in ['siren', 'non_siren']:
         folder = os.path.join(DATA_DIR, label_name)
         if not os.path.exists(folder):
             print(f"Cartella non trovata: {folder}")
             continue
         for fname in os.listdir(folder):
-            if fname.lower().endswith('.wav'):
+            if fname.lower().endswith('.wav'): #controlla che il file sia un .wav
                 path = os.path.join(folder, fname)
                 feat = extract_features(path)
                 if feat is not None:
@@ -53,10 +55,12 @@ def main():
     print(f"Totale campioni: {len(X)}")
     le = LabelEncoder()
     y_enc = le.fit_transform(y)  
-    X_train, X_test, y_train, y_test = train_test_split(X, y_enc, test_size=0.2, random_state=42, stratify=y_enc)
+    X_train, X_test, y_train, y_test = train_test_split(X, y_enc, test_size=0.2, random_state=42, stratify=y_enc)ù
+    #deviazione standard dei dati
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
-    X_test_scaled = scaler.transform(X_test)
+    X_test_scaled = scaler.transform(X_test) 
+    #addestramento modello SVM con kernel veloce e calcola la probabilità
     model = SVC(kernel='linear', C=1.0, probability=True, random_state=42)
     model.fit(X_train_scaled, y_train)
     y_pred = model.predict(X_test_scaled)
